@@ -35,11 +35,15 @@ setup_keys() {
         soundness-cli import-key --name "$key_name"
     else
         echo "Invalid choice. Skipping key setup."
+        return
     fi
+    
+    echo "\n🔑 Listing all stored keys:"
+    soundness-cli list-keys
 }
 
 # Main execution
 install_cli
 setup_keys
 
-echo "Setup completed! Run 'soundness-cli list-keys' to check your keys."
+echo "\n🎉 Setup completed! Run 'soundness-cli list-keys' anytime to check your keys."
