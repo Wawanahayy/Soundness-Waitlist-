@@ -19,30 +19,34 @@ install_cli() {
         source ~/.bashrc
     fi
     
-    echo "Installation complete!"
+    # Validate installation
+    if ! command_exists soundness-cli; then
+        echo "❌ Installation failed or soundness-cli is not in PATH. Try running: source ~/.bashrc"
+        exit 1
+    fi
+    
+    echo "✅ Installation complete!"
 }
 
 # Generate or import a key with input validation
 setup_keys() {
-    while true; do
-        echo "Do you want to (1) Generate a new key or (2) Import an existing one?"
-        read -p "Enter 1 or 2 (default is 1): " choice
-        choice=${choice:-1}  # Default to 1 if empty
-
-        if [ "$choice" == "1" ]; then
-            read -p "Enter a name for your key: " key_name
-            soundness-cli generate-key --name "$key_name"
-            break
-        elif [ "$choice" == "2" ]; then
-            read -p "Enter a name for your key: " key_name
-            soundness-cli import-key --name "$key_name"
-            break
-        else
-            echo "❌ Invalid choice. Please enter 1 or 2."
-        fi
+    local choice=""
+    while [[ "$choice" != "1" && "$choice" != "2" ]]; do
+        echo "Do you want to:"
+        echo "1) Generate a new key"
+        echo "2) Import an existing key"
+        read -rp "Enter 1 or 2: " choice
     done
     
-    echo "\n🔑 Listing all stored keys:"
+    read -rp "Enter a name for your key: " key_name
+    
+    if [[ "$choice" == "1" ]]; then
+        soundness-cli generate-key --name "$key_name"
+    else
+        soundness-cli import-key --name "$key_name"
+    fi
+    
+    echo -e "\n🔑 Listing all stored keys:"
     soundness-cli list-keys
 }
 
@@ -50,4 +54,4 @@ setup_keys() {
 install_cli
 setup_keys
 
-echo "\n🎉 Setup completed! Run 'soundness-cli list-keys' anytime to check your keys."
+echo -e "\n🎉 Setup completed! Run 'soundness-cli list-keys' anytime to check your keys."
